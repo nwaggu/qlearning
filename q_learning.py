@@ -63,7 +63,7 @@ class QLearning():
     def updateSarsa(self, state, action, reward, next_state, next_action):
         self.Q[state][action] = self.Q[state][action]*(1-self.alpha) + self.alpha * (reward + self.discount*self.Q[next_state][next_action])
 
-    def episode(self,max_steps):
+    def episodeQ(self,max_steps):
         step = 0
         bonus = 0
         self.env.reset()
@@ -80,10 +80,13 @@ class QLearning():
             next_state = (next_state[0],next_state[1])
             self.updateQ(state, action, reward, next_state)
             if reward==20:
-                bonus+=1
+                bonus+=20
+            else:
+                bonus-=1
         
             position = self.env.agent
             #
+            #self.epsilon=self.epsilon*self.epsilon
             step += 1
         return bonus
     
@@ -101,20 +104,23 @@ class QLearning():
             next_action = self.policy(next_state)
             #Data
             if reward==20:
-                bonus+=1
+                bonus+=20
+            else:
+                bonus-=1
             #Update Q
             self.updateSarsa(state, action, reward, next_state, next_action)
             #Update state
             state = next_state
             action = next_action
             step += 1
+            #self.epsilon=self.epsilon*self.epsilon
         return bonus
 
 
-    def train(self,episodes):
+    def trainQ(self,episodes):
         reward_over_time = []
         for _ in range(episodes):
-            bonus = self.episode(20)
+            bonus = self.episodeQ(20)
             reward_over_time.append(bonus)
         return reward_over_time
 
@@ -132,20 +138,26 @@ def createList(output):
     for x in range(grid_width):
         for y in range(grid_height):
             map[x,y] = max(q_values[(x,y)].values())
-    #map = np.transpose(map)
-    seaborn.heatmap(map, annot=True, linewidth=0.5)
+    map = np.transpose(map)
+    map = np.flipud(map)
+    s = seaborn.heatmap(map, annot=True, linewidth=0.5)
+    xticks = [0,1,2,3,4]
+    yticks = [0,1,2,3,4,5,6,7,8,9]
+    s.set(xlabel='X Position', ylabel='Y-Position',xticks=yticks,yticks=xticks)
             
 
 q = QLearning(gridWorld.gridWorld(), alpha, 0.9, 0.9)
 p = QLearning(gridWorld.gridWorld(), alpha, 0.9, 0.9)
 x = list(range(0,200))
-results_Q = q.train(200)
+results_Q = q.trainQ(200)
 results_Sarsa = p.trainSarsa(200)
 
-plt.plot(x, results_Q, color='r',label='Q Learning')
-plt.plot(x, results_Sarsa, color='b', label='Sarsa')
-plt.xlabel("Number of Trials") 
-plt.ylabel("Number of Rewards") 
+plt.plot(x, results_Q, color='r',label='Q Learning',linewidth=0.7)
+plt.plot(x, results_Sarsa, color='b', label='Sarsa',linewidth=0.7)
+plt.title("Q vs SARSA Learning")
+plt.ylim(0, 250)
+plt.xlabel("Episode #") 
+plt.ylabel("Reward Per Episode") 
 plt.legend()
 plt.show()
 
@@ -160,11 +172,6 @@ plt.xlabel("X Position")
 plt.ylabel("Y Position") 
 createList(p)
 plt.show()
-
-
-class Sarsa():
-    def __init__(self) -> None:
-        pass
 
 
 
