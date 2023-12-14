@@ -10,9 +10,7 @@ alpha = 0.4
 actions = 4
 action_list = ["up","down","left","right"]
 
-def keywithmaxval(d):
-     """ a) create a list of the dict's keys and values; 
-         b) return the key with the max value"""  
+def dictmaxkey(d): 
      v = list(d.values())
      k = list(d.keys())
      return k[v.index(max(v))]
@@ -50,7 +48,7 @@ class QLearning():
         directions = self.Q[current_state]
 
         if random_numb < self.epsilon:
-            action = keywithmaxval(directions)
+            action = dictmaxkey(directions)
         else:
             action = random.choice(list(directions.keys()))
         return action
