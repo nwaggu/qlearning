@@ -1,3 +1,3 @@
-# Qlearning
+# SARSA and Qlearning
 
- An implementation of a Q-Learning algorithm for a simple gridworld
+ A compatative implementation of a SARSA and Q-Learning algorithm for a gridworld
